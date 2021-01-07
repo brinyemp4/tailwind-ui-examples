@@ -17,7 +17,7 @@
                     <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
                 </svg>
                 <span class="mt-2 text-base leading-normal">Select files</span>
-                <input type="file" class="hidden" multiple />
+                <input id="select-files" type="file" class="hidden" accept="image/gif, image/jpeg, image/png" multiple onchange="showUploadedFiles();" />
             </label>
 
             <div id="whole-progress" class="relative pt-1 hidden">
@@ -61,7 +61,39 @@
                 </div>
             </form>
         </div>
+        <div class="m-2 md:col-span-2">
+            <div id="uploaded-images" class="grid sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 grid-cols-2"></div>
+            <template id="uploaded-image-node-template">
+                <div class="animate-pulse rounded-full bg-blue-400 h-36 w-36 m-6">
+                    <img src="" alt="" />
+                </div>
+            </template>
+        </div>
     </div>
+
+    <script type="text/javascript">
+        const showUploadedFiles = () => {
+            const selectFilesInput = document.getElementById("select-files");
+            const uploadedImages = document.getElementById("uploaded-images");
+            const imageNodeTemplate = document.getElementById("uploaded-image-node-template");
+            console.log("selectFilesInput.files: "+selectFilesInput.files.item);
+            Array.from(selectFilesInput.files).forEach(fileItem => {
+                const imgNode = imageNodeTemplate.content.cloneNode(true);
+                const imgDiv = imgNode.querySelector("div");
+                const imgImg = imgNode.querySelector("img");
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    imgImg.src = e.target.result;
+                    ["animate-pulse", "rounded-full", "bg-blue-400"].forEach(classToRemove => {
+                        imgDiv.classList.remove(classToRemove);
+                    });
+                };
+                reader.readAsDataURL(fileItem);
+                uploadedImages.append(imgNode);
+            });
+        }
+    </script>
+
 </body>
 
 </html>
